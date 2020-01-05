@@ -4,5 +4,7 @@ public enum State {
     IDLE,
     HEALTHY,
     BACK_PRESSURE,
-    BLOCKED
+    BLOCKED,
+    UNKNOWN,
+    UNREACHABLE
 }
