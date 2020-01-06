@@ -11,4 +11,5 @@ public class Connection {
     private String id;
     private String uri;
     private ConnectionStatus status;
+    private ConnectionComponent component;
 }

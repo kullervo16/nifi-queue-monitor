@@ -7,11 +7,7 @@ import lombok.ToString;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString
-public class ConnectionStatus {
+public class ConnectionComponent {
     private String id;
-    private String groupId;
-    private String name;
-    private String sourceName;
-    private String destinationName;
-    private ConnectionAggregates aggregateSnapshot;
+    private String parentGroupId;
 }
