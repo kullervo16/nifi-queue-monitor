@@ -32,8 +32,9 @@ $(document).ready(function(){
                 '                        <div class="progress-bar progress-bar-'+clazz+'" role="progressbar" style="width: '+q.filledPercentage+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>\n' +
                 '                    </div><br/></div>';
 
-            innerContent += '<div class="col info-title"><a href="'+q.url+'"><i class="fa fa-question-circle"></i></a></div>';
+            innerContent += '<div class="col info-title"><a href="'+q.url+'" target="_blank"><i class="fa fa-question-circle"></i></a></div>';
             innerContent += "</div><br/>";
+
 
             $("#queues").append(innerContent);
         }
