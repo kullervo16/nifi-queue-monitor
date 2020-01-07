@@ -36,6 +36,7 @@ public class QueueMonitorService {
     // =======================================================
     // Data retrieval methods
     // =======================================================
+    // TODO : make interval configurable
     @Scheduled(initialDelay = 1000, fixedRate = 20000)
     private void executeRetrieval() {
         List<ServerStatus> newList = new ArrayList<>();
@@ -65,8 +66,9 @@ public class QueueMonitorService {
 
             GroupResponse groupJson = this.objectMapper.readValue(url, GroupResponse.class);
             for(Connection conn : groupJson.getConnections()) {
-
+                // TODO : recurse into subgroups
                 ConnectionAggregates counters = conn.getStatus().getAggregateSnapshot();
+                // TODO : check for item on the blockedList
                 if(counters.getFlowFilesQueued() > 0) {
                     if(log.isDebugEnabled()) {
                         log.debug(conn.getStatus().getAggregateSnapshot().isBlocked() + " : " + conn.getStatus().getAggregateSnapshot().getPercentage() + "%");
