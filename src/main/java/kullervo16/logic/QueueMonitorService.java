@@ -23,7 +23,7 @@ public class QueueMonitorService {
     public QueueMonitorService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         // TODO : read from config file
-        serverStatuses.add(new ServerStatus("localhost","http://localhost:8080/",State.UNKNOWN, new ArrayList<>()));
+        serverStatuses.add(new ServerStatus("localhost","http://localhost:8080/",State.UNKNOWN));
     }
 
     // =======================================================
@@ -41,7 +41,7 @@ public class QueueMonitorService {
     private void executeRetrieval() {
         List<ServerStatus> newList = new ArrayList<>();
         for(ServerStatus walker : this.serverStatuses) {
-            ServerStatus newState = new ServerStatus(walker.getName(), walker.getUrl(),State.UNKNOWN, new ArrayList<>());
+            ServerStatus newState = new ServerStatus(walker.getName(), walker.getUrl(),State.UNKNOWN);
 
             fetchStatusForGroup(newState, "root");
             if(newState.getState().equals(State.UNKNOWN)) {
@@ -78,13 +78,18 @@ public class QueueMonitorService {
                     serverStatus.getQueues().add(new QueueStatus(counters.getPercentage(), counters.isBlocked(), conn.getId(), displayName, queueUrl));
                     if(counters.isBlocked()) {
                         serverStatus.setState(State.BLOCKED);
+                        serverStatus.countBlocked();
                     } else {
                         if(!State.BLOCKED.equals(serverStatus.getState())) {
-                            serverStatus.setState(State.HEALTHY);
+                            serverStatus.setState(State.BUSY);
                         }
+                        serverStatus.countBusy();
                     }
+                } else {
+                    serverStatus.countIdle();
                 }
             }
+            serverStatus.touch();
         } catch (Exception e) {
             e.printStackTrace();
             serverStatus.setState(State.UNREACHABLE);

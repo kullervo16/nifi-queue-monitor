@@ -2,7 +2,7 @@ package kullervo16.logic;
 
 public enum State {
     IDLE,
-    HEALTHY,
+    BUSY,
     BACK_PRESSURE,
     BLOCKED,
     UNKNOWN,
