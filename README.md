@@ -53,7 +53,7 @@ just busy (green). Idle and ignored queues are not shown (since not interesting 
 The progress bar indicates the current fill level (maximum of number of files and queuesize). 
 
 ## Deployment & configuration
-There is a [docker image](https://github.com/kullervo16/nifi-queue-monitor) available. You only just need to provide a configuration XML file and (optionally) 
+There is a [docker image](https://hub.docker.com/repository/docker/kullervo16/nifi-q-monitor) available. You only just need to provide a configuration XML file and (optionally) 
 change some environment variables.
 
 Here is an example of the XML config file
