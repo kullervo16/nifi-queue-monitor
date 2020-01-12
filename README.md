@@ -53,7 +53,7 @@ just busy (green). Idle and ignored queues are not shown (since not interesting 
 The progress bar indicates the current fill level (maximum of number of files and queuesize). 
 
 ## Deployment & configuration
-There is a docker image available. You only just need to provide a configuration XML file and (optionally) 
+There is a [docker image](https://github.com/kullervo16/nifi-queue-monitor) available. You only just need to provide a configuration XML file and (optionally) 
 change some environment variables.
 
 Here is an example of the XML config file
@@ -65,7 +65,11 @@ Here is an example of the XML config file
     </server>
 </config>
 ```
+
+This file should be in ```/opt/config/configuration.xml``` (or at the location you set in the variable ```config.location```)
  
+ You can change the configuration interval via environment variable : ```collection.interval.seconds```. The default value is 60 seconds.
+ Since we only check the process groups, the impact on the NIFI is low (no queue content inspection required)
 
 ## Still to do 
 * implement user management (for the moment only public instances can be handled)

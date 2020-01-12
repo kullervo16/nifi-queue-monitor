@@ -11,7 +11,7 @@ function loadData() {
                 }
             }
             collectionTimes[val.name] = updateTime;
-            var stateId = val.name+'_state';
+            var stateId = val.name.replace(" ","_")+'_state';
             $("#"+stateId).remove();
             $(".queueInfo").remove();
 
