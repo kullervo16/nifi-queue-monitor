@@ -1,0 +1,5 @@
+<config>
+    <server url="http://localhost:8080" name="local">
+        <exclude id="81577ff6-016f-1000-ac25-832e410123d6"/>
+    </server>
+</config>

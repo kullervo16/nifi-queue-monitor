@@ -1,5 +1,6 @@
 package kullervo16.logic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jdk.nashorn.internal.objects.annotations.Constructor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,10 +21,13 @@ public class ServerStatus {
     private State state;
     @NonNull
     private List<QueueStatus> queues = new ArrayList<>();
+    @JsonIgnore
+    private List<String> excludeList = new ArrayList<>();
     private int queuesIdle;
     private int queuesBusy;
     private int queuesBlocked;
     private long collectionTime;
+    private int queuesIgnored;
 
     public void countBusy() {
         this.queuesBusy++;
@@ -39,5 +43,9 @@ public class ServerStatus {
 
     public void touch() {
         this.collectionTime = System.currentTimeMillis();
+    }
+
+    public void countIgnored() {
+        this.queuesIgnored++;
     }
 }

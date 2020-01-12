@@ -11,13 +11,13 @@ function loadData() {
                 }
             }
             collectionTimes[val.name] = updateTime;
-            var stateId = +val.name+'_state';
+            var stateId = val.name+'_state';
             $("#"+stateId).remove();
             $(".queueInfo").remove();
 
             if(val.state === 'BLOCKED') {
                 $("#serverStatus").append('<button type="button" class="btn btn-danger btn-round" id="'+stateId+'">' + val.name + '</button>');
-            } else {_
+            } else {
                 $("#serverStatus").append('<button type="button" class="btn btn-success btn-round" id="'+stateId+'">' + val.name + '</button>');
             }
             // TODO : persist selection in URL
@@ -49,6 +49,7 @@ function loadData() {
             $("#idle").text(data[0].queuesIdle);
             $("#busy").text(data[0].queuesBusy);
             $("#blocked").text(data[0].queuesBlocked);
+            $("#ignored").text(data[0].queuesIgnored);
         });
 
 
