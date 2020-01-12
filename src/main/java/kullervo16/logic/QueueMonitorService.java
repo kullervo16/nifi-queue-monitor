@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kullervo16.logic.model.Connection;
 import kullervo16.logic.model.ConnectionAggregates;
 import kullervo16.logic.model.GroupResponse;
+import kullervo16.logic.model.ProcessGroup;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -71,7 +72,7 @@ public class QueueMonitorService {
         for(ServerStatus walker : this.serverStatuses) {
             ServerStatus newState = new ServerStatus(walker.getName(), walker.getUrl(),State.UNKNOWN);
 
-            fetchStatusForGroup(newState, "root", walker.getExcludeList());
+            fetchStatusForGroup(newState, walker.getUrl()+"nifi-api/flow/process-groups/root", walker.getExcludeList());
             if(newState.getState().equals(State.UNKNOWN)) {
                 // nothing to report, so set to idle
                 newState.setState(State.IDLE);
@@ -85,17 +86,19 @@ public class QueueMonitorService {
         this.serverStatuses = newList;
     }
 
-    private void fetchStatusForGroup(ServerStatus serverStatus, String group, List<String> excludeList) {
+    private void fetchStatusForGroup(ServerStatus serverStatus, String uri, List<String> excludeList) {
 
         try {
-            URL url = new URL(serverStatus.getUrl()+"nifi-api/flow/process-groups/"+group);
+            URL url = new URL(uri);
             if(log.isDebugEnabled()) {
                 log.debug("Reading "+url);
             }
 
             GroupResponse groupJson = this.objectMapper.readValue(url, GroupResponse.class);
+            for(ProcessGroup pg : groupJson.getChildren()) {
+                this.fetchStatusForGroup(serverStatus, pg.getUri().replaceAll("/process-groups/","/flow/process-groups/"), excludeList);
+            }
             for(Connection conn : groupJson.getConnections()) {
-                // TODO : recurse into subgroups
                 ConnectionAggregates counters = conn.getStatus().getAggregateSnapshot();
                 // check whether this queue is to be ignored
                 if(excludeList.contains(conn.getComponent().getId())) {
