@@ -1,8 +1,9 @@
 function loadData() {
-    console.log("Loading data");
+    //console.log("Loading data");
     $.getJSON( "../servers/", function( data ) {
 
-        $.each( data, function( key, val ) {
+        for(var serverIndex=0;serverIndex<data.length;serverIndex++)  {
+            var val = data[serverIndex];
             var updateTime = val.collectionTime;
             if(collectionTimes[val.name] !== undefined) {
                 var lastCollectionTime = collectionTimes[val.name];
@@ -14,22 +15,28 @@ function loadData() {
             var pattern = /[^0-9a-zA-Z]+/g;
             var stateId = val.name.replace(pattern,"_")+'_state';
             $("#"+stateId).remove();
+
+            var serverStateClass = 'default';
+            if(val.state === 'BLOCKED') {
+                serverStateClass = 'danger';
+            } else if(val.state === 'UNREACHABLE') {
+                serverStateClass = 'default';
+            } else {
+                serverStateClass = 'success';
+            }
+            $("#serverStatus").append('<button type="button" class="btn btn-'+serverStateClass+' btn-round" id="'+stateId+'" onclick="selectServer('+serverIndex+')">' + val.name + '</button>');
+            if( serverIndex != selectedIndex) {
+                // only provide the queue details for the selected server
+                continue;
+            }
+            $("#selectedServer").text(val.name);
             $(".queueInfo").remove();
 
-            if(val.state === 'BLOCKED') {
-                $("#serverStatus").append('<button type="button" class="btn btn-danger btn-round" id="'+stateId+'">' + val.name + '</button>');
-            } else if(val.state === 'UNREACHABLE') {
-                $("#serverStatus").append('<button type="button" class="btn btn-default btn-round" id="'+stateId+'">' + val.name + '</button>');
-            } else {
-                $("#serverStatus").append('<button type="button" class="btn btn-success btn-round" id="'+stateId+'">' + val.name + '</button>');
-            }
-            // TODO : persist selection in URL
-            // TODO : reload automatically
             // display the queues of the selected one (per default, the first)
             for(var i=0;i<val.queues.length;i++) {
 
                 var q = val.queues[i];
-                console.log(q.displayName);
+                //console.log(q.displayName);
                 var innerContent = '<div class="row queueInfo">';
                 var clazz = 'success';
                 innerContent += '<div class="col-4 info-title">\n' + q.displayName +'</div>';
@@ -53,13 +60,21 @@ function loadData() {
             $("#busy").text(data[0].queuesBusy);
             $("#blocked").text(data[0].queuesBlocked);
             $("#ignored").text(data[0].queuesIgnored);
-        });
+        }
 
 
     });
 
 }
+
+function selectServer(index) {
+    selectedIndex = index;
+    collectionTimes = {};
+    loadData();
+}
+
 var collectionTimes = {};
+var selectedIndex = 0;
 
 $(document).ready(function(){
     window.setInterval(loadData, 1000);

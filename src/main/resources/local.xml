@@ -1,4 +1,9 @@
 <config>
+    <server url="http://localhost:8080" name="local first">
+    </server>
+    <server url="http://localhost:8090" name="unknown">
+        <exclude id="81577ff6-016f-1000-ac25-832e410123d6"/>
+    </server>
     <server url="http://localhost:8080" name="local (met haakjes!)">
         <exclude id="81577ff6-016f-1000-ac25-832e410123d6"/>
     </server>
