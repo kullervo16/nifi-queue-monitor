@@ -18,6 +18,8 @@ function loadData() {
 
             if(val.state === 'BLOCKED') {
                 $("#serverStatus").append('<button type="button" class="btn btn-danger btn-round" id="'+stateId+'">' + val.name + '</button>');
+            } else if(val.state === 'UNREACHABLE') {
+                $("#serverStatus").append('<button type="button" class="btn btn-default btn-round" id="'+stateId+'">' + val.name + '</button>');
             } else {
                 $("#serverStatus").append('<button type="button" class="btn btn-success btn-round" id="'+stateId+'">' + val.name + '</button>');
             }
