@@ -1,5 +1,6 @@
 package kullervo16.config;
 
+import io.prometheus.client.spring.boot.EnablePrometheusEndpoint;
 import kullervo16.staticweb.StaticPageServlet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;

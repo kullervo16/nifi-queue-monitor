@@ -10,7 +10,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -29,22 +33,35 @@ public class QueueMonitorService {
     private List<ServerStatus> serverStatuses = new ArrayList<>();
     private ObjectMapper objectMapper;
 
+    @Qualifier("counterService")
+    @Autowired
+    private CounterService counterService;
 
-    public QueueMonitorService(ObjectMapper objectMapper, @Value("${config.location}")String configPath) {
+    @Qualifier("gaugeService")
+    @Autowired
+    private GaugeService gaugeService;
+
+
+    public QueueMonitorService(ObjectMapper objectMapper,
+                               @Value("${config.location}")String configPath) {
+        this.counterService = counterService;
         this.objectMapper = objectMapper;
         try {
             Document configDoc = new SAXBuilder().build(new File(configPath));
+
             for(Element configEl : configDoc.getRootElement().getChildren()) {
                 String url = configEl.getAttributeValue("url");
                 if(!url.endsWith("/")) {
                     url += "/";
                 }
                 ServerStatus server = new ServerStatus(configEl.getAttributeValue("name"), url, State.UNKNOWN);
+                server.setId(configEl.getAttributeValue("id"));
                 serverStatuses.add(server);
                 for(Element excludeEl : configEl.getChildren("exclude")) {
                     server.getExcludeList().add(excludeEl.getAttributeValue("id"));
                 }
             }
+            //this.gaugeService.submit("numNifiServersMonitored", serverStatuses.size());
         } catch (JDOMException e) {
             log.error("Invalid configuration document : "+e.getMessage());
             System.exit(1);
@@ -68,6 +85,8 @@ public class QueueMonitorService {
 
     @Scheduled(initialDelay = 1000, fixedRateString = "${collection.interval.seconds:60}000")
     private void executeRetrieval() {
+        this.gaugeService.submit("numNifiServersMonitored", serverStatuses.size());
+        this.counterService.increment("nifiMetricCollection");
         List<ServerStatus> newList = new ArrayList<>();
         for(ServerStatus walker : this.serverStatuses) {
             ServerStatus newState = new ServerStatus(walker.getName(), walker.getUrl(),State.UNKNOWN);
@@ -126,6 +145,11 @@ public class QueueMonitorService {
                 }
             }
             serverStatus.touch();
+            this.gaugeService.submit(serverStatus.getId()+".idle", serverStatus.getQueuesIdle());
+            this.gaugeService.submit(serverStatus.getId()+".busy", serverStatus.getQueuesBusy());
+            this.gaugeService.submit(serverStatus.getId()+".blocked", serverStatus.getQueuesBlocked());
+            this.gaugeService.submit(serverStatus.getId()+".ignored", serverStatus.getQueuesIgnored());
+
         } catch (Exception e) {
             e.printStackTrace();
             serverStatus.setState(State.UNREACHABLE);

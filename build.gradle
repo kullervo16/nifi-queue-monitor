@@ -23,13 +23,12 @@ repositories {
 }
 
 dependencies {
-    //compile 'org.keycloak.bom:keycloak-adapter-bom:3.4.0.Final'
-    compile("org.springframework.boot:spring-boot-starter-web")
-    //compile 'org.keycloak:keycloak-spring-boot-starter:3.4.2.Final'
-//    compile 'org.springframework.boot:spring-boot-starter-security'
-//    compile 'org.keycloak:keycloak-tomcat8-adapter:3.4.2.Final'
-//    compile 'org.keycloak:keycloak-spring-boot-adapter:3.4.2.Final'
-    compile("org.apache.httpcomponents:httpclient:4.5.7")
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-actuator'
+    compile "io.prometheus:simpleclient_hotspot:0.0.26"
+    compile group: 'io.prometheus', name: 'simpleclient_spring_boot', version: '0.8.0'
+
+    compile 'org.apache.httpcomponents:httpclient:4.5.7'
     compile 'javax.servlet:javax.servlet-api:4.0.1'
     compile 'commons-io:commons-io:2.6'
     compile 'org.projectlombok:lombok:1.18.10'

@@ -23,6 +23,7 @@ public class ServerStatus {
     private List<QueueStatus> queues = new ArrayList<>();
     @JsonIgnore
     private List<String> excludeList = new ArrayList<>();
+    private String id;
     private int queuesIdle;
     private int queuesBusy;
     private int queuesBlocked;
