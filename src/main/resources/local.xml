@@ -6,5 +6,7 @@
     </server>
     <server url="http://localhost:8080" name="local (met haakjes!)" id="local3">
         <exclude id="81577ff6-016f-1000-ac25-832e410123d6"/>
+        <metrics id="9924fead-016f-1000-bb9a-d11f77a03d9f" name="success1"/>
+        <metrics id="1e93cb60-7e27-3fa5-84f3-082e471a7a2e" name="level2.success"/>
     </server>
 </config>

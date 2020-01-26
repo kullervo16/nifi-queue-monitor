@@ -70,7 +70,24 @@ This file should be in ```/opt/config/configuration.xml``` (or at the location y
  
  You can change the configuration interval via environment variable : ```collection.interval.seconds```. The default value is 60 seconds.
  Since we only check the process groups, the impact on the NIFI is low (no queue content inspection required)
+ 
+## Prometheus (metrics)
+Since this system is continuously requesting the state via the REST API, it would be a pity to keep this information to ourselves.
+Therefore, you can specify which queues you want to be reported via the spring boot actuator and a Prometheus endpoint. 
+
+The XML config takes both the id and a counter name. This is to prevent that you end up collecting 1000s of counters that do not interest you,
+and also that you are able to use the same counter name in various environments (where the UUIDs of the queues will be different, but the
+role they play may not)
+
+Example config :
+```
+    <server url="http://localhost:8080" name="local (met haakjes!)" id="local3">
+        <exclude id="81577ff6-016f-1000-ac25-832e410123d6"/>
+        <metrics id="9924fead-016f-1000-bb9a-d11f77a03d9f" name="success1"/>
+        <metrics id="1e93cb60-7e27-3fa5-84f3-082e471a7a2e" name="level2.success"/>
+    </server>
+``` 
+For each queue, both the current count and the fill percentage (maximum of file count percentage and size percentage) are stored.
 
 ## Still to do 
 * implement user management (for the moment only public instances can be handled)
-* make sure in monitor instance can monitor several NIFI instances

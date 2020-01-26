@@ -1,10 +1,7 @@
 package kullervo16.logic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kullervo16.logic.model.Connection;
-import kullervo16.logic.model.ConnectionAggregates;
-import kullervo16.logic.model.GroupResponse;
-import kullervo16.logic.model.ProcessGroup;
+import kullervo16.logic.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -60,6 +57,9 @@ public class QueueMonitorService {
                 for(Element excludeEl : configEl.getChildren("exclude")) {
                     server.getExcludeList().add(excludeEl.getAttributeValue("id"));
                 }
+                for(Element metricsEl : configEl.getChildren("metrics")) {
+                    server.getMetricsMap().put(metricsEl.getAttributeValue("id"),metricsEl.getAttributeValue("name"));
+                }
             }
             //this.gaugeService.submit("numNifiServersMonitored", serverStatuses.size());
         } catch (JDOMException e) {
@@ -90,6 +90,8 @@ public class QueueMonitorService {
         List<ServerStatus> newList = new ArrayList<>();
         for(ServerStatus walker : this.serverStatuses) {
             ServerStatus newState = new ServerStatus(walker.getName(), walker.getUrl(),State.UNKNOWN);
+            newState.setId(walker.getId());
+            newState.getMetricsMap().putAll(walker.getMetricsMap());
 
             fetchStatusForGroup(newState, walker.getUrl()+"nifi-api/flow/process-groups/root", walker.getExcludeList());
             if(newState.getState().equals(State.UNKNOWN)) {
@@ -142,6 +144,12 @@ public class QueueMonitorService {
                     }
                 } else {
                     serverStatus.countIdle();
+                }
+                if(serverStatus.getMetricsMap().containsKey(conn.getComponent().getId())) {
+                    String name = serverStatus.getMetricsMap().get(conn.getComponent().getId());
+                    String prefix = serverStatus.getId()+"."+name;
+                    this.gaugeService.submit(prefix+".queued", counters.getFlowFilesQueued());
+                    this.gaugeService.submit(prefix+".filled", counters.getPercentage());
                 }
             }
             serverStatus.touch();
