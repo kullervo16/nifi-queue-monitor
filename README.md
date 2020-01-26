@@ -89,5 +89,8 @@ Example config :
 ``` 
 For each queue, both the current count and the fill percentage (maximum of file count percentage and size percentage) are stored.
 
+This way, you can use the queue-monitor as an element manager for your nifi instance(s), and use Prometheus for metrics display and
+alerting. It is not the ambition to include this here, just to enable you to bridge it easily to your monitoring systems.
+
 ## Still to do 
 * implement user management (for the moment only public instances can be handled)
